@@ -1,0 +1,188 @@
+/* Body and general page styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-size: cover;
+    background-image: url(https://images.pexels.com/photos/14747971/pexels-photo-14747971.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1);
+    background-origin: border-box;
+}
+body::after{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: linear-gradient(135deg, #2a3d4e, #72a3f1); /* Deep blue gradient for a more modern feel */
+
+}
+
+/* Chat container with soft rounded edges and subtle shadow */
+#chat-container {
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    background: rgba(255, 255, 255, 0.83);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.46);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    animation: fadeIn 0.3s ease-out;
+  }
+/* Add fading animation when the chat container appears */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Chat box area where messages are displayed */
+#chat-box {
+    background-color: transparent;
+    border-radius: 15px;
+    padding: 20px;
+    max-height: 450px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+/* Chat history with smooth scrolling */
+#chat-history {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+/* User input area */
+#user-input {
+    padding: 14px 20px;
+    border-radius: 25px;
+    border: 2px solid #d3d3d3;
+    font-size: 16px;
+    outline: none;
+    margin-top: 12px;
+    transition: border 0.3s, box-shadow 0.3s ease-in-out;
+}
+
+/* Focus effect for input field */
+#user-input:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+}
+
+/* Button styles */
+button {
+    padding: 14px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    margin-top: 15px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+    width: 100%;
+    text-align: center;
+}
+
+/* Hover effect for button */
+button:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+}
+
+/* Active state for button */
+button:active {
+    background-color: #389238;
+    transform: translateY(0);
+}
+
+/* Chat message styles */
+.user-msg, .bot-msg {
+    padding: 14px 20px;
+    border-radius: 12px;
+    max-width: 80%;
+    font-size: 16px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+/* Styling for user messages */
+.user-msg {
+    background-color: #e1f7d5; /* Softer green background */
+    align-self: flex-end;
+    border-top-right-radius: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Styling for bot messages */
+.bot-msg {
+    background-color: #f4f4f9; /* Subtle light gray */
+    align-self: flex-start;
+    border-top-left-radius: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Bot typing animation */
+.bot-msg.typing::after {
+    content: '...';
+    position: absolute;
+    right: 12px;
+    bottom: 10px;
+    font-size: 18px;
+    color: #999;
+    animation: typing 1.5s infinite;
+}
+
+@keyframes typing {
+    0% {
+        content: '...';
+    }
+    33% {
+        content: '..';
+    }
+    66% {
+        content: '.';
+    }
+    100% {
+        content: '...';
+    }
+}
+
+/* Smooth scrolling for the chat history */
+#chat-history {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    scroll-behavior: smooth;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    #chat-container {
+        max-width: 100%;
+        padding: 15px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px 0;
+    }
+
+    #user-input {
+        font-size: 14px;
+    }
+}
