@@ -185,6 +185,7 @@ button:active {
     #chat-container {
         max-width: 100%;
         padding: 15px;
+            max-height: 100vh;
     }
 
     button {
@@ -195,6 +196,8 @@ button:active {
     #user-input {
         font-size: 14px;
     }
+
+    
 }
 
 /* Definition container styles */
