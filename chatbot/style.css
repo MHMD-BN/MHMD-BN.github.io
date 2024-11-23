@@ -10,15 +10,19 @@ body {
     background-size: cover;
     background-image: url(https://images.pexels.com/photos/14747971/pexels-photo-14747971.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1);
     background-origin: border-box;
+    color: #333;
 }
-body::after{
+
+/* Gradient background overlay */
+body::after {
+    content: "";
     width: 100%;
     height: 100%;
     position: absolute;
     top: 0;
     left: 0;
-    background: linear-gradient(135deg, #2a3d4e, #72a3f1); /* Deep blue gradient for a more modern feel */
-
+z-index: -1;
+    background: linear-gradient(135deg, rgba(42, 61, 78, 0.8), rgba(114, 163, 241, 0.8));
 }
 
 /* Chat container with soft rounded edges and subtle shadow */
@@ -26,15 +30,17 @@ body::after{
     width: 100%;
     max-width: 480px;
     max-height: 85vh;
-    background: rgba(255, 255, 255, 0.83);
-    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
     padding: 20px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.46);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     animation: fadeIn 0.3s ease-out;
-  }
+    backdrop-filter: blur(5px); /* Add blur effect to enhance modern feel */
+}
+
 /* Add fading animation when the chat container appears */
 @keyframes fadeIn {
     0% {
@@ -68,23 +74,24 @@ body::after{
 #user-input {
     padding: 14px 20px;
     border-radius: 25px;
-    border: 2px solid #d3d3d3;
+    border: 2px solid #ccc;
     font-size: 16px;
     outline: none;
     margin-top: 12px;
     transition: border 0.3s, box-shadow 0.3s ease-in-out;
+    background-color: #f7f7f7; /* Subtle background for input */
 }
 
 /* Focus effect for input field */
 #user-input:focus {
-    border-color: #4CAF50;
-    box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+    border-color: #007bff;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
 }
 
 /* Button styles */
 button {
     padding: 14px 20px;
-    background-color: #4CAF50;
+    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 25px;
@@ -94,17 +101,19 @@ button {
     transition: all 0.3s ease-in-out;
     width: 100%;
     text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 /* Hover effect for button */
 button:hover {
-    background-color: #45a049;
+    background-color: #0056b3;
     transform: translateY(-2px);
 }
 
 /* Active state for button */
 button:active {
-    background-color: #389238;
+    background-color: #004085;
     transform: translateY(0);
 }
 
@@ -118,22 +127,23 @@ button:active {
     word-wrap: break-word;
     position: relative;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Styling for user messages */
 .user-msg {
-    background-color: #e1f7d5; /* Softer green background */
+    background-color: #007bff; /* Modern blue background */
+    color: white;
     align-self: flex-end;
     border-top-right-radius: 0;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Styling for bot messages */
 .bot-msg {
-    background-color: #f4f4f9; /* Subtle light gray */
+    background-color: #28a745; /* Fresh green for bot messages */
+    color: white;
     align-self: flex-start;
     border-top-left-radius: 0;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Bot typing animation */
@@ -185,4 +195,74 @@ button:active {
     #user-input {
         font-size: 14px;
     }
+}
+
+/* Definition container styles */
+.definition-container {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    text-align: left;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.definition-container h2 {
+    color: #343a40;
+    margin: 0;
+    font-size: 1.3em;
+}
+
+.definition-container p {
+    color: #495057;
+    font-size: 1.1em;
+    margin: 5px 0;
+}
+
+.definition-container h3 {
+    color: #007bff;
+    margin-top: 10px;
+    font-size: 1em;
+}
+
+/* Example item */
+.example-item {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 5px 0;
+    font-size: 1em;
+    color: #212529;
+}
+
+/* Hear Example Button */
+.hear-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    margin-top: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.hear-btn:hover {
+    background-color: #218838;
+}
+
+.hear-btn:active {
+    background-color: #1e7e34;
+}
+
+/* Add subtle button animations for smoother interactions */
+button, .hear-btn {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:active, .hear-btn:active {
+    transform: scale(0.98);
 }
