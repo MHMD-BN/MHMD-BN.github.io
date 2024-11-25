@@ -185,7 +185,7 @@ button:active {
     #chat-container {
         max-width: 100%;
         padding: 15px;
-            max-height: 100vh;
+max-height:100%;
     }
 
     button {
@@ -196,8 +196,6 @@ button:active {
     #user-input {
         font-size: 14px;
     }
-
-    
 }
 
 /* Definition container styles */
@@ -268,4 +266,19 @@ button, .hear-btn {
 
 button:active, .hear-btn:active {
     transform: scale(0.98);
+}
+.next-def-icon {
+    font-size: 1.2em; /* Adjust size */
+    color: #007BFF; /* Icon color (blue) */
+    vertical-align: middle; /* Align with text */
+    transition: transform 0.2s ease-in-out; /* Smooth hover animation */
+}
+
+.next-def-icon:hover {
+    transform: rotate(180deg); /* Rotate on hover */
+    color: #0056b3; /* Darker shade of blue */
+}
+
+.load-more-icon{
+    color: red;
 }
