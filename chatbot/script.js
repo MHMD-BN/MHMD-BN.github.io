@@ -9,27 +9,7 @@ function createThemeToggle() {
     themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
     themeToggle.title = "Toggle Theme";
     
-    themeToggle.addEventListener('click', () => {
-        const root = document.documentElement;
-        const currentTheme = root.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        
-        // Add fade transition
-        document.body.style.opacity = '0';
-        
-        setTimeout(() => {
-            root.setAttribute('data-theme', newTheme);
-            themeToggle.innerHTML = newTheme === 'dark' ? 
-                '<i class="fas fa-moon"></i>' : 
-                '<i class="fas fa-sun"></i>';
-            
-            // Save theme preference
-            localStorage.setItem('theme', newTheme);
-            
-            // Fade back in
-            document.body.style.opacity = '1';
-        }, 200);
-    });
+    themeToggle.addEventListener('click', toggleTheme);
     
     document.body.appendChild(themeToggle);
 }
@@ -41,13 +21,50 @@ function initializeTheme() {
     
     createThemeToggle();
     
-    // Update toggle icon based on current theme
-    const themeToggle = document.getElementById('theme-toggle');
-    if (themeToggle) {
-        themeToggle.innerHTML = savedTheme === 'dark' ? 
-            '<i class="fas fa-moon"></i>' : 
-            '<i class="fas fa-sun"></i>';
+    // Update both desktop and mobile theme icons
+    updateThemeIcons(savedTheme);
+    
+    // Add click handler for mobile theme toggle
+    document.getElementById('mobile-theme').addEventListener('click', toggleTheme);
+    
+    // Add click handler for mobile clear
+    document.getElementById('mobile-clear').addEventListener('click', clearHistory);
+}
+
+function updateThemeIcons(theme) {
+    const iconClass = theme === 'dark' ? 'fa-moon' : 'fa-sun';
+    
+    // Update desktop theme toggle
+    const desktopIcon = document.querySelector('#theme-toggle i');
+    if (desktopIcon) {
+        desktopIcon.className = `fas ${iconClass}`;
     }
+    
+    // Update mobile theme toggle
+    const mobileIcon = document.querySelector('#mobile-theme i');
+    if (mobileIcon) {
+        mobileIcon.className = `fas ${iconClass}`;
+    }
+}
+
+function toggleTheme() {
+    const root = document.documentElement;
+    const currentTheme = root.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    // Add fade transition
+    document.body.style.opacity = '0';
+    
+    setTimeout(() => {
+        root.setAttribute('data-theme', newTheme);
+        updateThemeIcons(newTheme);
+        
+        // Save theme preference
+        localStorage.setItem('theme', newTheme);
+        
+        // Fade back in
+        document.body.style.opacity = '1';
+    }, 200);
 }
 
 document.addEventListener('DOMContentLoaded', initializeTheme);
