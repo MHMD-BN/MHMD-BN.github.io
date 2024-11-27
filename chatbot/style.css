@@ -984,7 +984,7 @@ button:active {
 }
 
 /* Mobile adjustments */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
     /* Hide floating buttons */
     #theme-toggle, #clear-history {
         display: none;
