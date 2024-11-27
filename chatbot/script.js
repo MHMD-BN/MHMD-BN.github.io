@@ -3,6 +3,80 @@ const dictionaryApiUrl = 'https://dictionaryapi.com/api/v3/references/learners/j
 const fallbackApiUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en/';
 const voiceRSSAPIKey = '4c3b4d4b34804e11b8f6e4b8d74f594f'; // VoiceRSS API key
 
+function createThemeToggle() {
+    const themeToggle = document.createElement('div');
+    themeToggle.id = 'theme-toggle';
+    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+    themeToggle.title = "Toggle Theme";
+    
+    themeToggle.addEventListener('click', () => {
+        const root = document.documentElement;
+        const currentTheme = root.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        // Add fade transition
+        document.body.style.opacity = '0';
+        
+        setTimeout(() => {
+            root.setAttribute('data-theme', newTheme);
+            themeToggle.innerHTML = newTheme === 'dark' ? 
+                '<i class="fas fa-moon"></i>' : 
+                '<i class="fas fa-sun"></i>';
+            
+            // Save theme preference
+            localStorage.setItem('theme', newTheme);
+            
+            // Fade back in
+            document.body.style.opacity = '1';
+        }, 200);
+    });
+    
+    document.body.appendChild(themeToggle);
+}
+
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    const root = document.documentElement;
+    root.setAttribute('data-theme', savedTheme);
+    
+    createThemeToggle();
+    
+    // Update toggle icon based on current theme
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        themeToggle.innerHTML = savedTheme === 'dark' ? 
+            '<i class="fas fa-moon"></i>' : 
+            '<i class="fas fa-sun"></i>';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initializeTheme);
+
+document.getElementById('clear-history').addEventListener('click', clearHistory);
+
+function clearHistory() {
+    const chatHistory = document.getElementById('chat-history');
+    const messages = chatHistory.children;
+    
+    // Convert HTMLCollection to Array and reverse it for bottom-up animation
+    const messagesArray = Array.from(messages);
+    
+    // Animate each message's removal
+    messagesArray.forEach((message, index) => {
+        setTimeout(() => {
+            // Add fade-out and slide-up animation
+            message.style.transition = 'all 0.3s ease';
+            message.style.opacity = '0';
+            message.style.transform = 'translateY(-20px)';
+            
+            // Remove the element after animation
+            setTimeout(() => {
+                message.remove();
+            }, 300);
+        }, index * 100); // Stagger the animation for each message
+    });
+}
+
 function sendMessage() {
     const userInput = document.getElementById('user-input').value.trim();
     if (userInput === "") return;
@@ -20,6 +94,7 @@ function sendMessage() {
         fetchDefinition(userInput); // Handle word input
     }
 }
+
 
 function fetchDefinition(word) {
     fetch(`${dictionaryApiUrl}${word}?key=${apiKey}`)
@@ -104,48 +179,119 @@ function createDefinitionContainer(word, definitions, examples, loadMore = false
     const container = document.createElement('div');
     container.classList.add('definition-container');
 
-    // Word and primary definition
+    // Word heading
     const wordElement = document.createElement('h2');
     wordElement.textContent = word;
     container.appendChild(wordElement);
 
-    // Definition and "Next Definition" icon
+    // Definition
     let currentDefinitionIndex = 0;
     const definitionElement = document.createElement('p');
     definitionElement.textContent = `Definition: ${definitions[currentDefinitionIndex] || "Definition not available."}`;
     container.appendChild(definitionElement);
 
+    // Translation element
+    const translationElement = document.createElement('p');
+    translationElement.classList.add('translation');
+    container.appendChild(translationElement);
+
+    // Icons container - now after definition and translation
+    const iconsContainer = document.createElement('div');
+    iconsContainer.classList.add('icons-container');
+
     // Next definition icon
     const nextDefinitionIcon = document.createElement('span');
-    nextDefinitionIcon.innerHTML = '&#x21bb;'; // Unicode for circular arrow
+    nextDefinitionIcon.innerHTML = '<i class="fas fa-sync-alt"></i>';
     nextDefinitionIcon.title = "Show Next Definition";
-    nextDefinitionIcon.classList.add('next-def-icon');
-    nextDefinitionIcon.style.cursor = 'pointer';
-    nextDefinitionIcon.style.marginLeft = '10px';
-    container.appendChild(nextDefinitionIcon);
-
+    nextDefinitionIcon.classList.add('icon', 'next-def-icon');
     nextDefinitionIcon.addEventListener('click', () => {
         currentDefinitionIndex = (currentDefinitionIndex + 1) % definitions.length;
         definitionElement.textContent = `Definition: ${definitions[currentDefinitionIndex] || "Definition not available."}`;
+        
+        // Hide translation when showing new definition
+        translationElement.classList.remove('show');
+        translationElement.textContent = ''; // Clear the translation text
     });
+    iconsContainer.appendChild(nextDefinitionIcon);
 
-    // Translate definition icon
+    // Translate icon
     const translateIcon = document.createElement('span');
-    translateIcon.innerHTML = '&#x1F30E;'; // Unicode for globe icon
+    translateIcon.innerHTML = '<i class="fas fa-language"></i>';
     translateIcon.title = "Translate Definition";
-    translateIcon.classList.add('translate-icon');
-    translateIcon.style.cursor = 'pointer';
-    translateIcon.style.marginLeft = '10px';
-    container.appendChild(translateIcon);
-
-    // Translated text container
-    const translationElement = document.createElement('p');
-    translationElement.classList.add('translation-text');
-    container.appendChild(translationElement);
-
+    translateIcon.classList.add('icon', 'translate-icon');
     translateIcon.addEventListener('click', () => {
-        translateDefinition(definitions[currentDefinitionIndex], translationElement);
+        const isHidden = !translationElement.classList.contains('show');
+        if (isHidden) {
+            // Show and translate
+            translationElement.classList.add('show');
+            translateDefinition(definitions[currentDefinitionIndex], translationElement);
+        } else {
+            // Hide translation
+            translationElement.classList.remove('show');
+        }
     });
+    iconsContainer.appendChild(translateIcon);
+
+    // Learn more icon
+    const learnMoreIcon = document.createElement('span');
+    learnMoreIcon.innerHTML = '<i class="fas fa-lightbulb"></i>';
+    learnMoreIcon.title = "Learn More";
+    learnMoreIcon.classList.add('icon', 'learn-more-icon');
+    
+    // Create word relationships container (initially hidden)
+    const relationshipsContainer = document.createElement('div');
+    relationshipsContainer.classList.add('word-relationships');
+    relationshipsContainer.style.display = 'none'; // Initially hidden
+
+    // Similar Words
+    const similarWordsSection = document.createElement('div');
+    similarWordsSection.classList.add('relationship-section');
+    const similarWordsTitle = document.createElement('h4');
+    similarWordsTitle.textContent = 'Similar Words:';
+    const similarWordsList = document.createElement('p');
+    similarWordsList.classList.add('relationship-list');
+    similarWordsSection.appendChild(similarWordsTitle);
+    similarWordsSection.appendChild(similarWordsList);
+    relationshipsContainer.appendChild(similarWordsSection);
+
+    // Antonyms
+    const antonymsSection = document.createElement('div');
+    antonymsSection.classList.add('relationship-section');
+    const antonymsTitle = document.createElement('h4');
+    antonymsTitle.textContent = 'Antonyms:';
+    const antonymsList = document.createElement('p');
+    antonymsList.classList.add('relationship-list');
+    antonymsSection.appendChild(antonymsTitle);
+    antonymsSection.appendChild(antonymsList);
+    relationshipsContainer.appendChild(antonymsSection);
+
+    // Synonyms
+    const synonymsSection = document.createElement('div');
+    synonymsSection.classList.add('relationship-section');
+    const synonymsTitle = document.createElement('h4');
+    synonymsTitle.textContent = 'Synonyms:';
+    const synonymsList = document.createElement('p');
+    synonymsList.classList.add('relationship-list');
+    synonymsSection.appendChild(synonymsTitle);
+    synonymsSection.appendChild(synonymsList);
+    relationshipsContainer.appendChild(synonymsSection);
+
+    container.appendChild(relationshipsContainer);
+
+    // Add click event for learn more icon
+    learnMoreIcon.addEventListener('click', () => {
+        const isHidden = relationshipsContainer.style.display === 'none';
+        relationshipsContainer.style.display = isHidden ? 'block' : 'none';
+        learnMoreIcon.innerHTML = isHidden ? '<i class="fas fa-lightbulb"></i>' : '<i class="fas fa-lightbulb"></i>';
+        
+        // Only fetch relationships if container is being shown
+        if (isHidden) {
+            fetchWordRelationships(word, similarWordsList, antonymsList, synonymsList);
+        }
+    });
+
+    iconsContainer.appendChild(learnMoreIcon);
+    container.appendChild(iconsContainer);
 
     // Examples Section
     const examplesTitle = document.createElement('h3');
@@ -172,9 +318,9 @@ function createDefinitionContainer(word, definitions, examples, loadMore = false
     const loadMoreIcon = document.createElement('span');
     loadMoreIcon.innerHTML = 'load more examples'; // Unicode for downwards arrow
     loadMoreIcon.title = "Load more examples";
-    loadMoreIcon.classList.add('load-more-icon');
+    loadMoreIcon.classList.add('load-more-button');
     loadMoreIcon.style.cursor = 'pointer';
-    loadMoreIcon.style.marginTop = '10px';
+    loadMoreIcon.style.marginTop = '20px';
 
     // Add event listener to load more examples
     loadMoreIcon.addEventListener('click', () => loadMoreExamples(word, examplesContainer));
@@ -223,6 +369,7 @@ function createNewExamplesMessage(word, examples) {
 
     // Word and "New Examples" heading
     const wordElement = document.createElement('h2');
+    wordElement.style.marginTop = '50px';
     wordElement.textContent = `New Examples for: ${word} (Click to Listen):`;
     messageContainer.appendChild(wordElement);
     const examplesContainer = document.createElement('div');
@@ -230,7 +377,7 @@ function createNewExamplesMessage(word, examples) {
 
     examples.forEach((example) => {
         const exampleElement = document.createElement('div');
-        exampleElement.classList.add('example-item');
+        exampleElement.classList.add('example-item', 'animate');
         exampleElement.textContent = example || "No examples available.";
 
         // Add click event to read example aloud
@@ -238,6 +385,9 @@ function createNewExamplesMessage(word, examples) {
         exampleElement.title = "Click to listen";
         exampleElement.addEventListener('click', () => playAudio(example));
 
+        // Add staggered animation delay
+        exampleElement.style.animationDelay = `${examples.indexOf(example) * 100}ms`;
+        
         examplesContainer.appendChild(exampleElement);
     });
 
@@ -273,36 +423,37 @@ function extractMoreExamples(data) {
 }
 
 async function translateDefinition(definition, translationElement) {
+    // Show loading state
+    translationElement.classList.add('show'); // Add show class
+    translationElement.textContent = 'Translating...';
+
     const url = 'https://simple-translate2.p.rapidapi.com/translate?source_lang=auto&target_lang=ar';
     const options = {
         method: 'POST',
         headers: {
-            'x-rapidapi-key': '38664e406amsh1dda16328365f35p160142jsnec160d9f672c',  // Replace with your RapidAPI key
+            'x-rapidapi-key': '38664e406amsh1dda16328365f35p160142jsnec160d9f672c',
             'x-rapidapi-host': 'simple-translate2.p.rapidapi.com',
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            sourceText: definition  // The definition text to translate
+            sourceText: definition
         })
     };
 
-    // Check if the definition is empty
     if (!definition || definition.trim() === '') {
         translationElement.textContent = 'No definition to translate.';
         return;
     }
 
     try {
-        // Fetch the translation from the Simple Translate API
         const response = await fetch(url, options);
         if (!response.ok) {
             throw new Error(`Translation failed: ${response.status}`);
         }
 
         const result = await response.json();
-        // Check if the translation was successful and display it
         if (result && result.data && result.data.targetText) {
-            translationElement.textContent = `Translation: ${result.data.targetText}`;
+            translationElement.textContent = result.data.targetText;
         } else {
             throw new Error('No translation found in the response.');
         }
@@ -311,49 +462,6 @@ async function translateDefinition(definition, translationElement) {
         console.error('Error translating:', error.message);
     }
 }
-
-async function translateDefinition(definition, translationElement) {
-    const url = 'https://simple-translate2.p.rapidapi.com/translate?source_lang=auto&target_lang=ar';
-    const options = {
-        method: 'POST',
-        headers: {
-            'x-rapidapi-key': '38664e406amsh1dda16328365f35p160142jsnec160d9f672c',  // Replace with your RapidAPI key
-            'x-rapidapi-host': 'simple-translate2.p.rapidapi.com',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            sourceText: definition  // The definition text to translate
-        })
-    };
-
-    // Check if the definition is empty
-    if (!definition || definition.trim() === '') {
-        translationElement.textContent = 'No definition to translate.';
-        return;
-    }
-
-    try {
-        // Fetch the translation from the Simple Translate API
-        const response = await fetch(url, options);
-        if (!response.ok) {
-            throw new Error(`Translation failed: ${response.status}`);
-        }
-
-        const result = await response.json();
-        // Check if the translation was successful and display it
-        if (result && result.data && result.data.targetText) {
-            translationElement.textContent = `Translation: ${result.data.targetText}`;
-        } else {
-            throw new Error('No translation found in the response.');
-        }
-    } catch (error) {
-        translationElement.textContent = 'Failed to translate definition.';
-        console.error('Error translating:', error.message);
-    }
-}
-
-
-
 
 // Play audio using VoiceRSS API
 async function playAudio(text) {
@@ -380,23 +488,42 @@ async function playAudio(text) {
 // Display an HTML element in the chat
 function displayElement(element) {
     const chatHistory = document.getElementById('chat-history');
+    
+    // Add animation class
+    element.classList.add('animate');
+    
+    // Append the element
     chatHistory.appendChild(element);
-
-    // Scroll to the bottom after the new message is added
-    chatHistory.scrollTop = chatHistory.scrollHeight;
+    
+    // Scroll to the new element
+    element.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start'
+    });
 }
-
-// Display a plain text message in the chat
 function displayMessage(message, type) {
     const chatHistory = document.getElementById('chat-history');
     const messageElement = document.createElement('div');
-    messageElement.classList.add(type);
+    messageElement.classList.add(type, 'message-fade-in');
     messageElement.textContent = message;
+    
+    // Add initial opacity
+    messageElement.style.opacity = '0';
     chatHistory.appendChild(messageElement);
-
-    // Scroll to the bottom after the new message is added
-    chatHistory.scrollTop = chatHistory.scrollHeight;
+    
+    // Trigger reflow
+    messageElement.offsetHeight;
+    
+    // Fade in
+    messageElement.style.opacity = '1';
+    
+    // Scroll to the new message
+    messageElement.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'end'
+    });
 }
+
 
 // Trigger sending message on Enter key press
 document.getElementById('user-input').addEventListener('keydown', function(event) {
@@ -406,3 +533,150 @@ document.getElementById('user-input').addEventListener('keydown', function(event
     }
 });
 
+// Add these new functions to handle the word relationships
+async function fetchSimilarWords(word, container) {
+    try {
+        const response = await fetch(`${dictionaryApiUrl}${word}?key=${apiKey}`);
+        const data = await response.json();
+        
+        const similarWords = extractRelatedWords(data, 'sim');
+        displayWordRelations('Similar Words', similarWords, container);
+    } catch (error) {
+        console.error('Error fetching similar words:', error);
+    }
+}
+
+async function fetchAntonyms(word, container) {
+    try {
+        const response = await fetch(`${dictionaryApiUrl}${word}?key=${apiKey}`);
+        const data = await response.json();
+        
+        const antonyms = extractRelatedWords(data, 'ant');
+        displayWordRelations('Antonyms', antonyms, container);
+    } catch (error) {
+        console.error('Error fetching antonyms:', error);
+    }
+}
+
+async function fetchSynonyms(word, container) {
+    try {
+        const response = await fetch(`${dictionaryApiUrl}${word}?key=${apiKey}`);
+        const data = await response.json();
+        
+        const synonyms = extractRelatedWords(data, 'syn');
+        displayWordRelations('Synonyms', synonyms, container);
+    } catch (error) {
+        console.error('Error fetching synonyms:', error);
+    }
+}
+
+function extractRelatedWords(data, relationType) {
+    const relatedWords = new Set();
+    
+    if (Array.isArray(data) && data[0]?.meta?.[relationType]) {
+        data[0].meta[relationType].forEach(word => relatedWords.add(word));
+    }
+    
+    return Array.from(relatedWords);
+}
+
+function displayWordRelations(title, words, container) {
+    // Remove any existing relations display
+    const existingRelations = container.querySelector('.word-relations');
+    if (existingRelations) {
+        existingRelations.remove();
+    }
+
+    const relationsDiv = document.createElement('div');
+    relationsDiv.classList.add('word-relations');
+    
+    const titleElement = document.createElement('h3');
+    titleElement.textContent = title;
+    relationsDiv.appendChild(titleElement);
+
+    if (words.length === 0) {
+        const noWordsMsg = document.createElement('p');
+        noWordsMsg.textContent = `No ${title.toLowerCase()} found.`;
+        relationsDiv.appendChild(noWordsMsg);
+    } else {
+        const wordsList = document.createElement('div');
+        wordsList.classList.add('related-words-list');
+        
+        words.forEach(word => {
+            const wordElement = document.createElement('span');
+            wordElement.classList.add('related-word');
+            wordElement.textContent = word;
+            wordElement.addEventListener('click', () => fetchDefinition(word));
+            wordsList.appendChild(wordElement);
+        });
+        
+        relationsDiv.appendChild(wordsList);
+    }
+
+    container.appendChild(relationsDiv);
+}
+
+async function fetchWordRelationships(word, similarWordsList, antonymsList, synonymsList) {
+    try {
+        // First get similar words from Merriam-Webster API
+        const mwResponse = await fetch(`${dictionaryApiUrl}${word}?key=${apiKey}`);
+        const mwData = await mwResponse.json();
+
+        // Get similar words (stems)
+        let similarWords = [];
+        if (Array.isArray(mwData) && mwData[0]?.meta?.stems) {
+            similarWords = mwData[0].meta.stems;
+        }
+
+        // Now get synonyms and antonyms from the free Dictionary API
+        const freeResponse = await fetch(`${fallbackApiUrl}${word}`);
+        const freeData = await freeResponse.json();
+
+        let synonyms = [];
+        let antonyms = [];
+
+        if (Array.isArray(freeData) && freeData.length > 0) {
+            // Collect synonyms and antonyms from all meanings
+            freeData[0].meanings.forEach(meaning => {
+                if (meaning.synonyms) {
+                    synonyms = [...new Set([...synonyms, ...meaning.synonyms])];
+                }
+                if (meaning.antonyms) {
+                    antonyms = [...new Set([...antonyms, ...meaning.antonyms])];
+                }
+            });
+        }
+
+        // Update the display with clickable words
+        [
+            { element: synonymsList, words: synonyms, type: 'Synonyms' },
+            { element: antonymsList, words: antonyms, type: 'Antonyms' },
+            { element: similarWordsList, words: similarWords, type: 'Similar Words' }
+        ].forEach(({ element, words, type }) => {
+            element.innerHTML = ''; // Clear existing content
+            if (words.length > 0) {
+                words.forEach((relatedWord, index) => {
+                    const wordSpan = document.createElement('span');
+                    wordSpan.textContent = relatedWord;
+                    wordSpan.classList.add('clickable-word');
+                    wordSpan.addEventListener('click', () => fetchDefinition(relatedWord));
+                    
+                    element.appendChild(wordSpan);
+                    
+                    // Add comma and space if not the last word
+                    if (index < words.length - 1) {
+                        element.appendChild(document.createTextNode(', '));
+                    }
+                });
+            } else {
+                element.textContent = `No ${type.toLowerCase()} found`;
+            }
+        });
+
+    } catch (error) {
+        console.error('Error fetching word relationships:', error);
+        synonymsList.textContent = 'Error fetching synonyms';
+        antonymsList.textContent = 'Error fetching antonyms';
+        similarWordsList.textContent = 'Error fetching similar words';
+    }
+}
