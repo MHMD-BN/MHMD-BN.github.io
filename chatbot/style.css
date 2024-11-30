@@ -62,7 +62,7 @@ body {
     background-position: center;
     background-attachment: fixed;
     color: var(--text-color);
-    max-height: 100vh;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1079,7 +1079,8 @@ button:active {
         align-items: center;
         position:absolute;
         bottom:0;
-        width: 91vw;
+        left:0;
+        width: 93vw;
         background: white;
     }
 
