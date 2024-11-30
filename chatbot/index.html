@@ -2,208 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>the Projects</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 , height=device-height">
+    <title>English Learning Chatbot</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>The Projects</h1>
-            <nav>
-                <ul>
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#projects">Projects</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </nav>
-            <button id="theme-toggle" class="theme-toggle">
-                <span class="theme-icon">🎨</span>
+    <button id="clear-history" title="Clear History">
+        <i class="fas fa-trash"></i>
+    </button>
+    
+    <div id="chat-container">
+        <div id="chat-box">
+            <div id="chat-history">
+                
+            </div>
+        </div>
+        <div id="input-container">
+            <div id="mobile-actions">
+                <div class="icon" id="mobile-clear">
+                    <i class="fas fa-trash"></i>
+                </div>
+                <div class="icon" id="mobile-theme">
+                    <i class="fas fa-moon"></i>
+                </div>
+            </div>
+            <input type="text" id="user-input" placeholder="Ask me about a word!" />
+            <button onclick="sendMessage()" id="sendbtn">
+                <i class="fas fa-paper-plane"></i>
             </button>
         </div>
-    </header>
-
-<!-- Hero Section -->
-<section class="hero">
-    <h1 class="title glow-text">Creative Developer</h1>
-    <p class="subtitle heading-underline">Crafting Digital Experiences</p>
-  </section>
-<!-- Skills Section -->
-<section class="skills">
-    <div class="section-heading">
-        <h2 class="section-title" data-text="EXPERTISE">My Skills</h2>
-        <span class="bg-text">SKILLS</span>
     </div>
-    <div class="container">
-        <div class="skills-grid">
-            <div class="skill-card">
-                <i class="fab fa-html5 skill-icon"></i>
-                <h3>HTML5</h3>
-            </div>
-            <div class="skill-card">
-                <i class="fab fa-css3-alt skill-icon"></i>
-                <h3>CSS3</h3>
-            </div>
-            <div class="skill-card">
-                <i class="fab fa-js skill-icon"></i>
-                <h3>JavaScript</h3>
-            </div>
-            <div class="skill-card">
-                <i class="fab fa-react skill-icon"></i>
-                <h3>React</h3>
-            </div>
-            <!-- Add more skills as needed -->
-        </div>
-    </div>
-</section>
-    <section id="projects" class="projects">
-        <div class="section-heading">
-            <h2 class="section-title" data-text="PORTFOLIO">My Projects</h2>
-            <span class="bg-text">WORKS</span>
-        </div>
-        <div class="container">
-            <div class="project-grid">
-                <!-- Featured Project -->
-                <div class="project-card featured">
-                    <div class="project-image-container">
-                        <img src="images/project1.png" alt="Featured Project" class="project-image">
-                    </div>
-                    <div class="project-content">
-                        <h3 class="project-title">About English Words</h3>
-                        <p class="project-description">
-                            website help you to get the defination of any word of english language,
-                            and also you can get the synonyms of that word.
-                            and also give you examples of that word.
-                        </p>
-                        <div class="project-tech-stack">
-                            <span class="tech-tag">HTML</span>
-                            <span class="tech-tag">CSS</span>
-                            <span class="tech-tag">JS</span>
-                            <span class="tech-tag">firebase</span>
-                        </div>
-                        <div class="project-links">
-                            <a href="chatbpt/index.html" class="project-link primary">
-                                <i class="fas fa-external-link-alt"></i>
-                                Live Demo
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Regular Project Card -->
-                <div class="project-card">
-                    <img src="https://images8.alphacoders.com/294/294069.jpg" alt="Project" class="project-image">
-                    <div class="project-content">
-                        <h3 class="project-title">Quotes from breaking bad movie</h3>
-                        <p class="project-description">
-                            this website give you the quotes from breaking bad movie.
-                        </p>
-                        <div class="project-tech-stack">
-                            <span class="tech-tag">HTMl</span>
-                            <span class="tech-tag">CSS</span>
-                            <span class="tech-tag">JS</span>
-                            <span class="tech-tag">breaking bad api</span>
-
-                        </div>
-                        <div class="project-links">
-                            <a href="brakenkbad api/index.html" class="project-link primary">
-                                <i class="fas fa-external-link-alt"></i>
-                                View Project
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="about" class="about">
-        <div class="section-heading">
-            <h2 class="section-title heading-decorator" data-text="ABOUT">About Me</h2>
-        </div>
-        <h3 class="sub-heading">Full Stack Developer</h3>
-        <div class="container">
-            <p>I'm a passionate web developer with experience in building beautiful, functional websites. My goal is to create innovative and user-friendly digital solutions.</p>
-        </div>
-    </section>
-
-<!-- Social Links -->
-<div class="social-links">
-    <a href="#" class="social-link">
-        <i class="fab fa-github"></i>
-    </a>
-    <a href="#" class="social-link">
-        <i class="fab fa-linkedin"></i>
-    </a>
-    <a href="#" class="social-link">
-        <i class="fab fa-twitter"></i>
-    </a>
-</div>
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2>Contact Me</h2>
-            <p>If you'd like to collaborate or have any inquiries, feel free to reach out!</p>
-            <form id="contactForm" onsubmit="handleSubmit(event)">
-                <input type="text" id="name" placeholder="Your Name" required>
-                <input type="email" id="email" placeholder="Your Email" required>
-                <textarea id="message" placeholder="Your Message" required></textarea>
-                <button type="submit">Send Message</button>
-            </form>
-        </div>
-    </section>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 Mohamed Abd Alhamed. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <!-- Add Firebase configuration -->
-    <script type="module">
-        // Import Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAaEqW9B9fEfhydYlpW1xRrLGpt1j4w6u0",
-            authDomain: "protfolio-becbf.firebaseapp.com",
-            projectId: "protfolio-becbf",
-            storageBucket: "protfolio-becbf.firebasestorage.app",
-            messagingSenderId: "686435853014",
-            appId: "1:686435853014:web:380129571e058bcbaddf77",
-            measurementId: "G-GLSFKWV6PG"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // Add form submit handler to window object
-        window.handleSubmit = async (event) => {
-            event.preventDefault();
-            
-            const formData = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                message: document.getElementById('message').value,
-                timestamp: new Date()
-            };
-
-            try {
-                await addDoc(collection(db, "messages"), formData);
-                alert('Message sent successfully!');
-                event.target.reset();
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error sending message');
-            }
-        };
-    </script>
-
-    <script src="scripts.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
