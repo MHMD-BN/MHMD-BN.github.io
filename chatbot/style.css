@@ -914,14 +914,13 @@ button:active {
     }
 
     #chat-container {
-        height: 100vh;
+        height: 98vh;
     width: 100vw;
     padding: unset;
     margin: unset;
     border: none;
     border-radius: 0;
     position: absolute;
-    top: 0;
     left: 0;
 
     }
