@@ -68,7 +68,7 @@ body {
     align-items: center;
     padding: 20px;
     position: relative;
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 /* Improved Gradient Overlay */
@@ -257,6 +257,7 @@ body::after {
         padding: 10px;
         gap: 8px;
         width: 100vw !important;
+        
     }
 
     #sendbtn {
@@ -1080,6 +1081,7 @@ button:active {
         position:absolute;
         bottom:0;
         width: 91vw;
+        background: white;
     }
 
     /* Ensure input takes remaining space */
