@@ -1081,7 +1081,8 @@ button:active {
         bottom:0;
         left:0;
         width: 93vw;
-background: var(--input-bg);    }
+        background: var(--input-bg);
+    }
 
     /* Ensure input takes remaining space */
     #user-input {
