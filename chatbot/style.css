@@ -62,7 +62,7 @@ body {
     background-position: center;
     background-attachment: fixed;
     color: var(--text-color);
-    min-height: 100vh;
+    max-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
