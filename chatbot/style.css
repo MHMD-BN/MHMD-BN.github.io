@@ -914,7 +914,7 @@ button:active {
     }
 
     #chat-container {
-        height: 98vh;
+        height: 100%;
     width: 100vw;
     padding: unset;
     margin: unset;
