@@ -922,7 +922,7 @@ button:active {
     border-radius: 0;
     position: absolute;
     left: 0;
-
+        top:0;
     }
 
     /* Further reduce sizes for very small screens */
