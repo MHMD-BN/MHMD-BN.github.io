@@ -321,12 +321,51 @@ function createDefinitionContainer(word, definitions, examples, loadMore = false
     examples.forEach((example) => {
         const exampleElement = document.createElement('div');
         exampleElement.classList.add('example-item');
-        exampleElement.textContent = example || "No examples available.";
+        
+        // Create text container
+        const textContainer = document.createElement('span');
+        textContainer.textContent = example || "No examples available.";
+        exampleElement.appendChild(textContainer);
 
-        // Add click event to read example aloud
-        exampleElement.style.cursor = 'pointer';
-        exampleElement.title = "Click to listen";
-        exampleElement.addEventListener('click', () => playAudio(example));
+        // Create icons container
+        const iconsContainer = document.createElement('div');
+        iconsContainer.classList.add('example-icons');
+
+        // Listen icon
+        const listenIcon = document.createElement('span');
+        listenIcon.innerHTML = '<i class="fas fa-volume-up"></i>';
+        listenIcon.classList.add('example-icon');
+        listenIcon.title = "Listen";
+        listenIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playAudio(example);
+        });
+
+        // Translate icon
+        const translateIcon = document.createElement('span');
+        translateIcon.innerHTML = '<i class="fas fa-language"></i>';
+        translateIcon.classList.add('example-icon');
+        translateIcon.title = "Translate";
+        
+        // Create translation container
+        const translationContainer = document.createElement('div');
+        translationContainer.classList.add('example-translation');
+        exampleElement.appendChild(translationContainer);
+
+        translateIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!translationContainer.classList.contains('show')) {
+                translationContainer.classList.add('show');
+                translateExample(example, translationContainer);
+            } else {
+                translationContainer.classList.remove('show');
+            }
+        });
+
+        // Append icons
+        iconsContainer.appendChild(listenIcon);
+        iconsContainer.appendChild(translateIcon);
+        exampleElement.appendChild(iconsContainer);
 
         examplesContainer.appendChild(exampleElement);
     });
@@ -387,20 +426,49 @@ function createNewExamplesMessage(word, examples) {
     // Word and "New Examples" heading
     const wordElement = document.createElement('h2');
     wordElement.style.marginTop = '50px';
-    wordElement.textContent = `New Examples for: ${word} (Click to Listen):`;
+    wordElement.textContent = `New Examples for: ${word}`;
     messageContainer.appendChild(wordElement);
+
     const examplesContainer = document.createElement('div');
     examplesContainer.classList.add('examples-container');
 
     examples.forEach((example) => {
         const exampleElement = document.createElement('div');
         exampleElement.classList.add('example-item', 'animate');
-        exampleElement.textContent = example || "No examples available.";
+        
+        // Create text container
+        const textContainer = document.createElement('span');
+        textContainer.textContent = example || "No examples available.";
+        exampleElement.appendChild(textContainer);
 
-        // Add click event to read example aloud
-        exampleElement.style.cursor = 'pointer';
-        exampleElement.title = "Click to listen";
-        exampleElement.addEventListener('click', () => playAudio(example));
+        // Create icons container
+        const iconsContainer = document.createElement('div');
+        iconsContainer.classList.add('example-icons');
+
+        // Listen icon
+        const listenIcon = document.createElement('span');
+        listenIcon.innerHTML = '<i class="fas fa-volume-up"></i>';
+        listenIcon.classList.add('example-icon');
+        listenIcon.title = "Listen";
+        listenIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playAudio(example);
+        });
+
+        // Translate icon
+        const translateIcon = document.createElement('span');
+        translateIcon.innerHTML = '<i class="fas fa-language"></i>';
+        translateIcon.classList.add('example-icon');
+        translateIcon.title = "Translate";
+        translateIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            translateExample(example);
+        });
+
+        // Append icons
+        iconsContainer.appendChild(listenIcon);
+        iconsContainer.appendChild(translateIcon);
+        exampleElement.appendChild(iconsContainer);
 
         // Add staggered animation delay
         exampleElement.style.animationDelay = `${examples.indexOf(example) * 100}ms`;
@@ -409,6 +477,14 @@ function createNewExamplesMessage(word, examples) {
     });
 
     messageContainer.appendChild(examplesContainer);
+
+    // Add "Load More Examples" button
+    const loadMoreIcon = document.createElement('span');
+    loadMoreIcon.innerHTML = 'load more examples';
+    loadMoreIcon.title = "Load more examples";
+    loadMoreIcon.classList.add('load-more-button');
+    loadMoreIcon.addEventListener('click', () => loadMoreExamples(word, examplesContainer));
+    messageContainer.appendChild(loadMoreIcon);
 
     return messageContainer;
 }
@@ -696,4 +772,117 @@ async function fetchWordRelationships(word, similarWordsList, antonymsList, syno
         antonymsList.textContent = 'Error fetching antonyms';
         similarWordsList.textContent = 'Error fetching similar words';
     }
+}
+
+// Add new function to translate examples
+async function translateExample(text, container) {
+    const { box, content } = createTranslationBox();
+    
+    const url = 'https://simple-translate2.p.rapidapi.com/translate?source_lang=auto&target_lang=ar';
+    const options = {
+        method: 'POST',
+        headers: {
+            'x-rapidapi-key': '38664e406amsh1dda16328365f35p160142jsnec160d9f672c',
+            'x-rapidapi-host': 'simple-translate2.p.rapidapi.com',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            sourceText: text
+        })
+    };
+
+    try {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+            throw new Error(`Translation failed: ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (result && result.data && result.data.targetText) {
+            // Create result container
+            const resultContainer = document.createElement('div');
+            resultContainer.classList.add('translation-result');
+            
+            // Original text
+            const originalText = document.createElement('div');
+            originalText.classList.add('original-text');
+            originalText.textContent = text;
+            
+            // Divider
+            const divider = document.createElement('div');
+            divider.classList.add('translation-divider');
+            
+            // Translated text
+            const translatedText = document.createElement('div');
+            translatedText.classList.add('translated-text');
+            translatedText.textContent = result.data.targetText;
+            translatedText.dir = 'rtl'; // For Arabic text
+
+            resultContainer.appendChild(originalText);
+            resultContainer.appendChild(divider);
+            resultContainer.appendChild(translatedText);
+            
+            content.innerHTML = ''; // Clear loading
+            content.appendChild(resultContainer);
+        } else {
+            throw new Error('No translation found in the response.');
+        }
+    } catch (error) {
+        content.innerHTML = `
+            <div class="translation-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Failed to translate example.</span>
+            </div>
+        `;
+        console.error('Error translating:', error.message);
+    }
+}
+
+function createTranslationBox() {
+    // Remove existing translation box if any
+    const existingBox = document.getElementById('translation-box');
+    if (existingBox) existingBox.remove();
+
+    const translationBox = document.createElement('div');
+    translationBox.id = 'translation-box';
+    translationBox.classList.add('translation-box');
+
+    // Create header
+    const header = document.createElement('div');
+    header.classList.add('translation-header');
+    
+    const title = document.createElement('span');
+    title.textContent = 'Translation';
+    
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+    closeBtn.onclick = () => {
+        translationBox.classList.remove('show');
+        setTimeout(() => translationBox.remove(), 300);
+    };
+
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+
+    // Create content
+    const content = document.createElement('div');
+    content.classList.add('translation-content');
+
+    // Create loading spinner
+    const loadingSpinner = document.createElement('div');
+    loadingSpinner.classList.add('translation-loading');
+    loadingSpinner.innerHTML = `
+        <div class="spinner"></div>
+        <span>Translating...</span>
+    `;
+    content.appendChild(loadingSpinner);
+
+    translationBox.appendChild(header);
+    translationBox.appendChild(content);
+    document.body.appendChild(translationBox);
+
+    // Show box with animation after a brief delay
+    setTimeout(() => translationBox.classList.add('show'), 10);
+
+    return { box: translationBox, content };
 }
