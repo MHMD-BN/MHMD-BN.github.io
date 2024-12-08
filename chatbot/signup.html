@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - English Learning Chatbot</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Animated Background -->
+        <div class="shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        
+        <!-- Auth Box -->
+        <div class="auth-box">
+            <h2>Create Account</h2>
+            
+            <!-- Optional Error Message -->
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <span></span>
+            </div>
+            
+            <form id="signup-form">
+                <div class="input-group">
+                    <input type="text" id="username" placeholder="Username" required>
+                    <i class="fas fa-user"></i>
+                </div>
+
+                <div class="input-group">
+                    <input type="email" id="email" placeholder="Email address" required>
+                    <i class="fas fa-envelope"></i>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" id="password" placeholder="Password" required>
+                    <i class="fas fa-lock"></i>
+                    <span class="password-toggle">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="confirm-password" placeholder="Confirm Password" required>
+                    <i class="fas fa-lock"></i>
+                    <span class="password-toggle">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                
+                <button type="submit">
+                    <span>Create Account</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+            
+            <div class="auth-link">
+                <span>Already have an account?</span>
+                <a href="login.html">Sign in</a>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        // Update the imports to include updateProfile
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyAtjfK6A1QRc7ygSYeZQ5mnGuGJKzjgc9U",
+          authDomain: "endwords-daa2c.firebaseapp.com",
+          databaseURL: "https://endwords-daa2c-default-rtdb.firebaseio.com",
+          projectId: "endwords-daa2c",
+          storageBucket: "endwords-daa2c.firebasestorage.app",
+          messagingSenderId: "732665932184",
+          appId: "1:732665932184:web:e5565002706546808c23ed"
+        };
+      
+        // Initialize Firebase and Auth
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Password toggle functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const passwordToggles = document.querySelectorAll('.password-toggle');
+            
+            passwordToggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const input = this.parentElement.querySelector('input');
+                    const icon = this.querySelector('i');
+                    
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                });
+            });
+
+            // Handle signup form
+            const signupForm = document.getElementById('signup-form');
+            if (signupForm) {
+                signupForm.addEventListener('submit', handleSignup);
+            }
+        });
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            removeErrorMessage();
+
+            // Basic validation
+            if (!username || !email || !password || !confirmPassword) {
+                showErrorMessage('All fields are required');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showErrorMessage('Passwords do not match');
+                return;
+            }
+
+            if (password.length < 6) {
+                showErrorMessage('Password must be at least 6 characters long');
+                return;
+            }
+
+            try {
+                // Show loading state
+                const submitButton = document.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span>Creating account...</span>';
+
+                // Create user
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                console.log('User created successfully:', userCredential);
+
+                // Update profile
+                await updateProfile(userCredential.user, {
+                    displayName: username
+                });
+                console.log('Profile updated successfully');
+
+                showSuccessMessage('Account created successfully! Redirecting...');
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+
+            } catch (error) {
+                console.error('Signup error:', error);
+                console.error('Error code:', error.code);
+                console.error('Error message:', error.message);
+
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        showErrorMessage('This email is already registered');
+                        break;
+                    case 'auth/invalid-email':
+                        showErrorMessage('Please enter a valid email address');
+                        break;
+                    case 'auth/operation-not-allowed':
+                        showErrorMessage('Email/password accounts are not enabled. Please contact support.');
+                        break;
+                    case 'auth/weak-password':
+                        showErrorMessage('Please choose a stronger password');
+                        break;
+                    default:
+                        showErrorMessage('An error occurred during signup. Please try again.');
+                }
+            } finally {
+                // Reset button state
+                const submitButton = document.querySelector('button[type="submit"]');
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<span>Create Account</span><i class="fas fa-arrow-right"></i>';
+            }
+        }
+
+        function showErrorMessage(message) {
+            const errorDiv = document.querySelector('.error-message');
+            errorDiv.querySelector('span').textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function showSuccessMessage(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>${message}</span>
+            `;
+            
+            const form = document.querySelector('form');
+            form.insertBefore(successDiv, form.firstChild);
+        }
+
+        function removeErrorMessage() {
+            const errorDiv = document.querySelector('.error-message');
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+                errorDiv.querySelector('span').textContent = '';
+            }
+        }
+    </script>
+</body>
+</html>
