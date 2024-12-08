@@ -1224,3 +1224,169 @@ button:active {
         padding: 15px;
     }
 }
+
+#account-toggle {
+    position: fixed;
+    top: 25px;
+    right: 85px; /* Position it next to theme toggle */
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: var(--icon-bg);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    box-shadow: 0 4px 15px var(--shadow-color);
+}
+
+#account-toggle i {
+    font-size: 1.1rem;
+    color: var(--button-bg);
+    transition: all 0.3s ease;
+}
+
+#account-toggle:hover {
+    background: var(--button-bg);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 20px var(--shadow-color);
+}
+
+#account-toggle:hover i {
+    color: var(--msg-text);
+}
+
+@media (max-width: 768px) {
+    #account-toggle {
+        display: none;
+    }
+}
+
+/* Mode Selector Styles */
+#mode-selector {
+    position: fixed;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+    background: var(--container-bg);
+    padding: 5px;
+    border-radius: 25px;
+    box-shadow: 0 4px 15px var(--shadow-color);
+}
+
+.mode-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: transparent;
+    color: var(--text-color);
+    border: 2px solid var(--button-bg);
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.mode-btn.active {
+    background: var(--button-bg);
+    color: var(--msg-text);
+}
+
+/* Today's Lesson Button */
+#todays-lesson {
+    position: fixed;
+    top: 25px;
+    right: 145px; /* Position it next to account toggle */
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: var(--icon-bg);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: none; /* Hidden by default */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    box-shadow: 0 4px 15px var(--shadow-color);
+}
+
+#todays-lesson i {
+    font-size: 1.1rem;
+    color: var(--button-bg);
+    transition: all 0.3s ease;
+}
+
+#todays-lesson:hover {
+    background: var(--button-bg);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 20px var(--shadow-color);
+}
+
+#todays-lesson:hover i {
+    color: var(--msg-text);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    #mode-selector {
+        top: 15px;
+        transform: translateX(-50%) scale(0.9);
+    }
+    
+    #todays-lesson {
+        display: none !important; /* Hide on mobile */
+    }
+}
+
+/* Context Menu Styles */
+.context-menu {
+    position: fixed;
+    background: var(--container-bg);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px var(--shadow-color);
+    padding: 8px;
+    min-width: 180px;
+    z-index: 1001;
+    opacity: 0;
+    transform: scale(0.95);
+    transform-origin: top right;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.context-menu.show {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.context-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    color: var(--text-color);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.context-menu-item:hover {
+    background: var(--hover-bg);
+}
+
+.context-menu-item i {
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.context-menu-divider {
+    height: 1px;
+    background: var(--input-border);
+    margin: 8px 0;
+}
