@@ -152,22 +152,23 @@ body{
 
 /* Modern Button */
 .auth-box button {
-    width: 100%;
-    padding: 16px;
-    background: #be4e63;
-    border: none;
-    border-radius: 14px;
-    color: #fff;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    overflow: hidden;
-    position: relative;
+  width: 100%;
+  padding: 16px;
+  background: #be4e63;
+  border: none;
+  border-radius: 14px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  overflow: hidden;
+  position: relative;
+  margin: 10px 0px;
 }
 
 .auth-box button:hover {
