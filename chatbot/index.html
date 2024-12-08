@@ -9,6 +9,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div id="mode-selector">
+        <button class="mode-btn active" data-mode="guest">Guest Mode</button>
+        <button class="mode-btn" data-mode="learn">Learning Mode</button>
+    </div>
+
+    <button id="todays-lesson" style="display: none;" title="Today's Lesson">
+        <i class="fas fa-book"></i>
+    </button>
+    
     <button id="clear-history" title="Clear History">
         <i class="fas fa-trash"></i>
     </button>
@@ -26,6 +35,9 @@
                 </div>
                 <div class="icon" id="mobile-theme">
                     <i class="fas fa-moon"></i>
+                </div>
+                <div class="icon" id="mobile-account">
+                    <i class="fas fa-user"></i>
                 </div>
             </div>
             <input type="text" id="user-input" placeholder="Ask me about a word!" />
