@@ -1,3 +1,5 @@
+let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
 const apiKey = 'c8498fbf-ead5-4663-875d-365f12f29b03'; // Merriam-Webster API key
 const dictionaryApiUrl = 'https://dictionaryapi.com/api/v3/references/learners/json/';
 const fallbackApiUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en/';
@@ -29,6 +31,11 @@ function initializeTheme() {
     
     // Add click handler for mobile clear
     document.getElementById('mobile-clear').addEventListener('click', clearHistory);
+    
+    createAccountIcon();
+    
+    // Add click handler for mobile account
+    document.getElementById('mobile-account').addEventListener('click', handleAccountClick);
 }
 
 function updateThemeIcons(theme) {
@@ -67,7 +74,19 @@ function toggleTheme() {
     }, 200);
 }
 
-document.addEventListener('DOMContentLoaded', initializeTheme);
+document.addEventListener('DOMContentLoaded', () => {
+    // Set initial login state
+    isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    
+    if (!isLoggedIn) {
+        // Set login state to false if not already set
+        localStorage.setItem('isLoggedIn', 'false');
+    }
+    
+    // Initialize the page
+    initializeTheme();
+    initializeModeSelector();
+});
 
 document.getElementById('clear-history').addEventListener('click', clearHistory);
 
@@ -885,4 +904,207 @@ function createTranslationBox() {
     setTimeout(() => translationBox.classList.add('show'), 10);
 
     return { box: translationBox, content };
+}
+
+function createAccountIcon() {
+    const accountIcon = document.createElement('div');
+    accountIcon.id = 'account-toggle';
+    accountIcon.innerHTML = '<i class="fas fa-user"></i>';
+    accountIcon.title = "Account";
+    
+    accountIcon.addEventListener('click', handleAccountClick);
+    
+    document.body.appendChild(accountIcon);
+}
+
+function handleAccountClick(event) {
+    event?.preventDefault(); // Prevent default behavior
+    event?.stopPropagation(); // Stop event bubbling
+    
+    // Remove existing context menu if any
+    removeContextMenu();
+    
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const currentUser = localStorage.getItem('currentUser');
+    
+    // Create context menu
+    const contextMenu = document.createElement('div');
+    contextMenu.classList.add('context-menu');
+    
+    // Calculate position based on click event or account icon position
+    const accountIcon = document.getElementById('account-toggle');
+    const iconRect = accountIcon.getBoundingClientRect();
+    
+    contextMenu.style.top = `${iconRect.bottom + 10}px`;
+    contextMenu.style.right = `${window.innerWidth - iconRect.right}px`;
+    
+    // Add menu items based on login status
+    if (isLoggedIn=='true') {
+        contextMenu.innerHTML = `
+            <div class="context-menu-item">
+                <i class="fas fa-user"></i>
+                <span>${currentUser}</span>
+            </div>
+            <div class="context-menu-divider"></div>
+            <div class="context-menu-item" onclick="window.location.href='personal.html'">
+                <i class="fas fa-id-card"></i>
+                <span>Personal Page</span>
+            </div>
+            <div class="context-menu-item" onclick="handleLogout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Log Out</span>
+            </div>
+        `;
+    } else {
+        contextMenu.innerHTML = `
+            <div class="context-menu-item" onclick="window.location.href='login.html'">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Log In</span>
+            </div>
+            <div class="context-menu-item" onclick="window.location.href='signup.html'">
+                <i class="fas fa-user-plus"></i>
+                <span>Sign Up</span>
+            </div>
+        `;
+    }
+    
+    document.body.appendChild(contextMenu);
+    
+    // Show menu with animation
+    setTimeout(() => contextMenu.classList.add('show'), 10);
+    
+    // Add click outside listener to close menu
+    document.addEventListener('click', handleClickOutside);
+}
+
+function handleLogout() {
+    if (confirm('Are you sure you want to log out?')) {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('currentUser');
+        window.location.reload();
+    }
+}
+
+function removeContextMenu() {
+    const existingMenu = document.querySelector('.context-menu');
+    if (existingMenu) {
+        existingMenu.classList.remove('show');
+        setTimeout(() => existingMenu.remove(), 200);
+    }
+}
+
+function handleClickOutside(event) {
+    const contextMenu = document.querySelector('.context-menu');
+    const accountIcon = document.getElementById('account-toggle');
+    
+    if (contextMenu && !contextMenu.contains(event.target) && !accountIcon.contains(event.target)) {
+        removeContextMenu();
+        document.removeEventListener('click', handleClickOutside);
+    }
+}
+
+function initializeModeSelector() {
+    const modeButtons = document.querySelectorAll('.mode-btn');
+    const todaysLessonBtn = document.getElementById('todays-lesson');
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'; // Explicitly check for 'true'
+    
+    // Set initial mode based on login status
+    const initialMode = isLoggedIn ? 'learn' : 'guest';
+    
+    // Set mode in localStorage and update UI
+    setMode(initialMode);
+    
+    // Update button states
+    modeButtons.forEach(btn => {
+        // Set initial active state
+        if (btn.dataset.mode === initialMode) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+        
+        btn.addEventListener('click', () => {
+            const mode = btn.dataset.mode;
+            
+            if (mode === 'learn') {
+                // Check if user is logged in
+                if (!isLoggedIn) {
+                    alert('Please log in to access Learning Mode');
+                    window.location.href = 'login.html';
+                    return;
+                }
+            }
+            
+            // Update buttons
+            modeButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Set mode
+            setMode(mode);
+        });
+    });
+    
+    // Today's Lesson button visibility
+    if (todaysLessonBtn) {
+        todaysLessonBtn.style.display = isLoggedIn ? 'flex' : 'none';
+    }
+}
+
+function setMode(mode) {
+    console.log('Setting mode to:', mode); // Debug log
+    
+    localStorage.setItem('mode', mode);
+    const todaysLessonBtn = document.getElementById('todays-lesson');
+    const body = document.body;
+    
+    if (mode === 'learn') {
+        if (todaysLessonBtn) {
+            todaysLessonBtn.style.display = 'flex';
+        }
+    } else {
+        if (todaysLessonBtn) {
+            todaysLessonBtn.style.display = 'none';
+        }
+    }
+}
+
+function showTodaysLesson() {
+    // Example lesson words - in a real app, these would come from your backend
+    const todaysWords = [
+        'diligent',
+        'perseverance',
+        'ambitious',
+        'determination',
+        'focus'
+    ];
+    
+    // Display message about today's lesson
+    displayMessage("Today's lesson focuses on words related to success and hard work:", 'bot-msg');
+    
+    // Display each word with a slight delay
+    todaysWords.forEach((word, index) => {
+        setTimeout(() => {
+            fetchDefinition(word);
+        }, index * 1000); // 1 second delay between each word
+    });
+}
+// Make sure this function is called when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded'); // Debug log
+    initializeTheme();
+    initializeModeSelector();
+});
+
+function setLoginState(loggedIn, user = null) {
+    isLoggedIn = loggedIn;
+    localStorage.setItem('isLoggedIn', loggedIn ? 'true' : 'false');
+    if (loggedIn && user) {
+        localStorage.setItem('currentUser', JSON.stringify({
+            email: user.email,
+            displayName: user.displayName,
+            uid: user.uid
+        }));
+    } else {
+        localStorage.removeItem('currentUser');
+    }
 }
